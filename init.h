@@ -26,25 +26,25 @@
 #define ZERO _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(E_SEG) | _BV(F_SEG)
 
 //SINK PINS
-#define pin_1 0
-#define pin_2 1
-#define pin_3 2
+#define PIN_1 0
+#define PIN_2 1
+#define PIN_3 2
 
 //SOURCE PINS
-#define pin_4 0
-#define pin_5 1
-#define pin_6 2
-#define pin_9 3
-#define pin_10 4
-#define pin_12 5
-#define pin_13 6
-#define pin_15 7
-#define pin_16 8
-#define pin_17 9
-#define pin_18 10
-#define pin_19 11
-#define pin_20 12
-#define pin_21 13
+#define PIN_4 0
+#define PIN_5 1
+#define PIN_6 2
+#define PIN_9 3
+#define PIN_10 4
+#define PIN_12 5
+#define PIN_13 6
+#define PIN_15 7
+#define PIN_16 8
+#define PIN_17 9
+#define PIN_18 10
+#define PIN_19 11
+#define PIN_20 12
+#define PIN_21 13
 
 #define EMPTY 99
 
@@ -86,7 +86,7 @@ _pin displaySinkPin[SINKPINS] =
 _pin displayAnuncPin[ANUNCPINS] =
 {
     {&DDRD, &PORTD, 0},
-    {&DDRD, &PORTD, 1}
+    {&DDRD, &PORTD, 5}
 };
 
 typedef struct _digit
@@ -95,12 +95,15 @@ typedef struct _digit
     //uint8_t display;
 }_digit;
 
-_digit displayDigit[DIGITS] =
+_digit displayDigit[DIGITS+ANUNCPINS] =
 {
-    {{{EMPTY, pin_6, pin_9, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, pin_2, pin_2, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
-    {{{pin_13, pin_10, pin_12, pin_12, pin_9, pin_13, pin_10, EMPTY}, {pin_2, pin_2, pin_2, pin_1, pin_1, pin_1, pin_1, EMPTY}},},
-    {{{pin_15, pin_16, pin_17, pin_17, pin_18, pin_15, pin_16, EMPTY}, {pin_1, pin_1, pin_1, pin_2, pin_2, pin_2, pin_2, EMPTY}},},
-    {{{pin_21, pin_19, pin_20, pin_20, pin_18, pin_21, pin_19, EMPTY}, {pin_2, pin_2, pin_2, pin_1, pin_1, pin_1, pin_1, EMPTY}}}
+    {{{EMPTY, PIN_6, PIN_9, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, PIN_2, PIN_2, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
+    {{{PIN_13, PIN_10, PIN_12, PIN_12, PIN_9, PIN_13, PIN_10, EMPTY}, {PIN_2, PIN_2, PIN_2, PIN_1, PIN_1, PIN_1, PIN_1, EMPTY}},},
+    {{{PIN_15, PIN_16, PIN_17, PIN_17, PIN_18, PIN_15, PIN_16, EMPTY}, {PIN_1, PIN_1, PIN_1, PIN_2, PIN_2, PIN_2, PIN_2, EMPTY}},},
+    {{{PIN_21, PIN_19, PIN_20, PIN_20, PIN_18, PIN_21, PIN_19, EMPTY}, {PIN_2, PIN_2, PIN_2, PIN_1, PIN_1, PIN_1, PIN_1, EMPTY}},},
+    {{{PIN_5, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_1, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
+    {{{PIN_4, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_3, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}}}
 };
+
 
 #endif // INIT_H_INCLUDED

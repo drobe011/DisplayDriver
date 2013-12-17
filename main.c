@@ -9,7 +9,7 @@
 #define TURN_OFF 0
 
 volatile uint8_t updateDisplay;
-volatile uint8_t data[4];
+volatile uint8_t data[DIGITS+ANUNCPINS];
 
 int main(void)
 {
@@ -37,25 +37,40 @@ int main(void)
                     *displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPORT |= _BV(displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPin);
                     *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT |= _BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
                 }
-                state = TURN_OFF;
+                if (data[DIGITS])
+                {
+                    *displayAnuncPin[displayDigit[DIGITS].Pin[0][DIGITS]].mPORT |= _BV(displayAnuncPin[displayDigit[DIGITS].Pin[0][DIGITS]].mPin);
+                    *displaySinkPin[displayDigit[DIGITS].Pin[1][DIGITS]].mPORT |= _BV(displaySinkPin[displayDigit[DIGITS].Pin[1][DIGITS]].mPin);
+                }
+                if (data[DIGITS+1])
+                {
+                    *displayAnuncPin[displayDigit[DIGITS+1].Pin[0][DIGITS+1]].mPORT |= _BV(displayAnuncPin[displayDigit[DIGITS+1].Pin[0][DIGITS+1]].mPin);
+                    *displaySinkPin[displayDigit[DIGITS+1].Pin[1][DIGITS+1]].mPORT |= _BV(displaySinkPin[displayDigit[DIGITS+1].Pin[1][DIGITS+1]].mPin);
+                }
+                //state = TURN_OFF;
                 break;
 
             case TURN_OFF:
-                if (data[currentDigit] & _BV(currentBit))
-                {
-                    *displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPORT &= ~_BV(displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPin);
-                    *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT &= ~_BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
-                }
-                state = TURN_ON;
-                if (currentBit == 7)
-                {
-                    (currentDigit == 3) ? currentDigit = 0 : currentDigit++;
-                    currentBit = 0;
-                }
-                else currentBit++;
+                *displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPORT &= ~_BV(displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPin);
+                *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT &= ~_BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
+                *displayAnuncPin[displayDigit[DIGITS+1].Pin[0][DIGITS+1]].mPORT |= _BV(displayAnuncPin[displayDigit[DIGITS+1].Pin[0][DIGITS+1]].mPin);
+                *displaySinkPin[displayDigit[DIGITS+1].Pin[1][DIGITS+1]].mPORT |= _BV(displaySinkPin[displayDigit[DIGITS+1].Pin[1][DIGITS+1]].mPin);
+                //state = TURN_ON;
 
                 break;
             }
+            if (currentBit == 7)
+            {
+                if (currentDigit == (DIGITS-1))
+                {
+                    currentDigit = 0;
+                    state ^= 1;
+                }
+                else currentDigit++;
+                currentBit = 0;
+            }
+            else currentBit++;
+
             updateDisplay = 0;
             TCNT1 = 0;
             TIMSK1 = _BV(OCIE1A);
