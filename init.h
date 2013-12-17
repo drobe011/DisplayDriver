@@ -3,6 +3,7 @@
 
 #define SOURCEPINS 14
 #define SINKPINS 3
+#define ANUNCPINS 2
 #define DIGITS 4
 //DIGIT BITMASKS
 #define A_SEG 0
@@ -12,6 +13,17 @@
 #define E_SEG 4
 #define F_SEG 5
 #define G_SEG 6
+
+#define ONE _BV(B_SEG) | _BV(C_SEG)
+#define TWO _BV(A_SEG) | _BV(B_SEG) | _BV(G_SEG) | _BV(E_SEG) | _BV(D_SEG)
+#define THREE _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(G_SEG)
+#define FOUR _BV(B_SEG) | _BV(C_SEG) | _BV(F_SEG) | _BV(G_SEG)
+#define FIVE _BV(A_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(F_SEG) | _BV(G_SEG)
+#define SIX _BV(A_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(E_SEG) | _BV(F_SEG) | _BV(G_SEG)
+#define SEVEN _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG)
+#define EIGHT _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(E_SEG) | _BV(F_SEG) | _BV(G_SEG)
+#define NINE _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(F_SEG) | _BV(G_SEG)
+#define ZERO _BV(A_SEG) | _BV(B_SEG) | _BV(C_SEG) | _BV(D_SEG) | _BV(E_SEG) | _BV(F_SEG)
 
 //SINK PINS
 #define pin_1 0
@@ -37,12 +49,13 @@
 #define EMPTY 99
 
 void setupPorts();
+void setupTimers();
 
 typedef struct _pin
 {
     volatile uint8_t * mDDR;
-    volatile const uint8_t * mPORT;
-    volatile const uint8_t mPin;
+    volatile uint8_t * mPORT;
+    volatile uint8_t mPin;
 }_pin;
 
 _pin displaySourcePin[SOURCEPINS] =
@@ -68,6 +81,12 @@ _pin displaySinkPin[SINKPINS] =
     {&DDRC, &PORTC, 6},
     {&DDRC, &PORTC, 7},
     {&DDRB, &PORTB, 0}
+};
+
+_pin displayAnuncPin[ANUNCPINS] =
+{
+    {&DDRD, &PORTD, 0},
+    {&DDRD, &PORTD, 1}
 };
 
 typedef struct _digit
