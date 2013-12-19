@@ -5,6 +5,7 @@
 #define SINKPINS 3
 #define ANUNCPINS 2
 #define DIGITS 4
+
 //DIGIT BITMASKS
 #define A_SEG 0
 #define B_SEG 1
@@ -46,15 +47,15 @@
 #define PIN_20 12
 #define PIN_21 13
 
-#define EMPTY 99
+#define EMPTY 0
 
 void setupPorts();
 void setupTimers();
 
 typedef struct _pin
 {
-    volatile uint8_t * mDDR;
-    volatile uint8_t * mPORT;
+    volatile uint8_t *mDDR;
+    volatile uint8_t *mPORT;
     volatile uint8_t mPin;
 }_pin;
 
@@ -73,7 +74,7 @@ _pin sourcePin[SOURCEPINS] =
     {&DDRC, &PORTC, 2},
     {&DDRC, &PORTC, 3},
     {&DDRC, &PORTC, 4},
-    {&DDRC, &PORTC, 5},
+    {&DDRC, &PORTC, 5}
 };
 
 _pin sinkPin[SINKPINS] =
@@ -83,7 +84,7 @@ _pin sinkPin[SINKPINS] =
     {&DDRB, &PORTB, 0}
 };
 
-_pin displayAnuncPin[ANUNCPINS] =
+_pin anuncPin[ANUNCPINS] =
 {
     {&DDRD, &PORTD, 5},
     {&DDRD, &PORTD, 7}
@@ -94,14 +95,14 @@ typedef struct _digit
     uint8_t Pin[2][8];
 }_digit;
 
-_digit displayDigit[DIGITS+ANUNCPINS] =
+_digit portMap[DIGITS] = //+ANUNCPINS] =
 {
     {{{EMPTY, PIN_6, PIN_9, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {EMPTY, PIN_2, PIN_2, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
     {{{PIN_13, PIN_10, PIN_12, PIN_12, PIN_9, PIN_13, PIN_10, EMPTY}, {PIN_2, PIN_2, PIN_2, PIN_1, PIN_1, PIN_1, PIN_1, EMPTY}},},
     {{{PIN_15, PIN_16, PIN_17, PIN_17, PIN_18, PIN_15, PIN_16, EMPTY}, {PIN_1, PIN_1, PIN_1, PIN_2, PIN_2, PIN_2, PIN_2, EMPTY}},},
-    {{{PIN_21, PIN_19, PIN_20, PIN_20, PIN_18, PIN_21, PIN_19, EMPTY}, {PIN_2, PIN_2, PIN_2, PIN_1, PIN_1, PIN_1, PIN_1, EMPTY}},},
-    {{{PIN_5, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_1, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
-    {{{PIN_4, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_3, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
+    {{{PIN_21, PIN_19, PIN_20, PIN_20, PIN_18, PIN_21, PIN_19, EMPTY}, {PIN_2, PIN_2, PIN_2, PIN_1, PIN_1, PIN_1, PIN_1, EMPTY}}}
+    //{{{PIN_5, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_1, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
+    //{{{PIN_4, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_3, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
 };
 
 
