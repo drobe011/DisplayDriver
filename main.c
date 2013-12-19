@@ -8,17 +8,20 @@
 #define TURN_ON 1
 #define TURN_OFF 0
 
-volatile uint8_t updateDisplay;
+volatile uint8_t updateDisplay = 1;
+volatile uint16_t secs;
 uint8_t data[DIGITS+ANUNCPINS];
 
 int main(void)
 {
-    uint8_t state = TURN_ON;
-    uint8_t currentDigit = 0, currentBit = 0;
+    uint8_t state = 0;
+    uint8_t currentDigit = 0, currentBit = 0, digitNum = 0;
+    const uint8_t digitData[] = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE};
+
     setupPorts();
     setupTimers();
-    data[0] = ONE;
-    data[1] = NINE;
+    data[0] = digitData[1];
+    data[1] = TWO;
     data[2] = THREE;
     data[3] = FOUR;
     data[4] = 1;
@@ -30,7 +33,6 @@ int main(void)
     {
         if (updateDisplay)
         {
-            TIMSK1 = 0;
             switch (state)
             {
             case TURN_ON:
@@ -40,26 +42,33 @@ int main(void)
                     *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT |= _BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
                 }
                 state = TURN_OFF;
-                //OCR1A = 40000;
+                updateDisplay = 0;
                 break;
 
             case TURN_OFF:
-                *displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPORT &= ~_BV(displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPin);
-                *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT &= ~_BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
-                state = TURN_ON;
-                if (currentBit > 6)
+                if (data[currentDigit] & _BV(currentBit))
                 {
-                    (currentDigit == (DIGITS-1)) ? currentDigit = 0 : currentDigit++;
-                    currentBit = 0;
+                    *displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPORT &= ~_BV(displaySourcePin[displayDigit[currentDigit].Pin[0][currentBit]].mPin);
+                    *displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPORT &= ~_BV(displaySinkPin[displayDigit[currentDigit].Pin[1][currentBit]].mPin);
                 }
-                else currentBit++;
-                //OCR1A = 100;
+                state = TURN_ON;
+                if (currentDigit == (DIGITS-1)) currentDigit = 0;
+                else
+                {
+                    currentDigit++;
+                    currentBit++;
+                }
 
+                if (currentBit == 8) currentBit = 0;
                 break;
             }
-            updateDisplay = 0;
-            TCNT1 = 0;
-            TIMSK1 = _BV(OCIE1A);
+
+        }
+        if (secs > 999)
+        {
+            digitNum = (digitNum == 9) ? 0 : digitNum+1;
+            data[1] = digitData[digitNum];
+            secs = 0;
         }
     }
 
@@ -86,12 +95,13 @@ void setupPorts()
 void setupTimers()
 {
     TCCR1A = 0;
-    TCCR1B = _BV(WGM12) | _BV(CS11);
-    OCR1A = 1200;
+    TCCR1B = _BV(WGM12) | _BV(CS10);
+    OCR1A = 7999; //1KHz
     TIMSK1 = _BV(OCIE1A);
 }
 
 ISR(TIMER1_COMPA_vect)
 {
     updateDisplay = 1;
+    secs++;
 }
