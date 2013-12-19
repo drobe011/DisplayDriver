@@ -58,7 +58,7 @@ typedef struct _pin
     volatile uint8_t mPin;
 }_pin;
 
-_pin displaySourcePin[SOURCEPINS] =
+_pin sourcePin[SOURCEPINS] =
 {
     {&DDRA, &PORTA, 0},
     {&DDRA, &PORTA, 1},
@@ -76,7 +76,7 @@ _pin displaySourcePin[SOURCEPINS] =
     {&DDRC, &PORTC, 5},
 };
 
-_pin displaySinkPin[SINKPINS] =
+_pin sinkPin[SINKPINS] =
 {
     {&DDRC, &PORTC, 6},
     {&DDRC, &PORTC, 7},
@@ -92,7 +92,6 @@ _pin displayAnuncPin[ANUNCPINS] =
 typedef struct _digit
 {
     uint8_t Pin[2][8];
-    //uint8_t display;
 }_digit;
 
 _digit displayDigit[DIGITS+ANUNCPINS] =
