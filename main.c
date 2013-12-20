@@ -7,16 +7,20 @@
 
 #define TURN_ON 1
 #define TURN_OFF 0
+#define TEST
 
-volatile uint8_t updateDisplay = 1;
+volatile uint8_t updateDisplay;
 volatile uint16_t sysTicker;
+uint8_t currentDigit, currentBit;
 
 int main(void)
 {
     uint8_t state = 0;
-    uint8_t currentDigit = 0, currentBit = 0, digitNum = 0;
+    uint8_t digitNum = 0;
     const uint8_t digitData[] = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE};
     uint8_t data[DIGITS];
+    data[0] = digitData[1];
+    data[1] = digitData[3];
 
     setupPorts();
     setupTimers();
@@ -30,39 +34,33 @@ int main(void)
             switch (state)
             {
             case TURN_ON:
-                if (data[currentDigit] & _BV(currentBit))
-                {
-                    *sourcePin[portMap[currentDigit].Pin[0][currentBit]].mPORT |= _BV(sourcePin[portMap[currentDigit].Pin[0][currentBit]].mPin);
-                    *sinkPin[portMap[currentDigit].Pin[1][currentBit]].mPORT |= _BV(sinkPin[portMap[currentDigit].Pin[1][currentBit]].mPin);
-                }
+                if (data[currentDigit] & _BV(currentBit)) currentSegmentOn();
                 state = TURN_OFF;
-                updateDisplay = 0;
                 break;
 
             case TURN_OFF:
-                if (data[currentDigit] & _BV(currentBit))
-                {
-                    *sourcePin[portMap[currentDigit].Pin[0][currentBit]].mPORT &= ~_BV(sourcePin[portMap[currentDigit].Pin[0][currentBit]].mPin);
-                    *sinkPin[portMap[currentDigit].Pin[1][currentBit]].mPORT &= ~_BV(sinkPin[portMap[currentDigit].Pin[1][currentBit]].mPin);
-                }
-                state = TURN_ON;
+                if (data[currentDigit] & _BV(currentBit)) currentSegmentOff();
                 if (currentDigit == (DIGITS-1)) currentDigit = 0;
                 else
                 {
                     currentDigit++;
                     currentBit++;
                 }
-                (currentBit == 8) ? currentBit = 0 : currentBit;
+                (currentBit == sizeof(currentBit)*8) ? currentBit = 0 : currentBit;
+                state = TURN_ON;
                 break;
             }
+            updateDisplay = 0;
 
         }
-        if (sysTicker > 999)
+        #ifdef TEST
+        if (sysTicker > 3999)
         {
             digitNum = (digitNum == 9) ? 0 : digitNum+1;
             data[1] = digitData[digitNum];
             sysTicker = 0;
         }
+        #endif // TEST
     }
 
     return 0;
@@ -88,8 +86,8 @@ void setupPorts()
 void setupTimers()
 {
     TCCR1A = 0;
-    TCCR1B = _BV(WGM12) | _BV(CS10);
-    OCR1A = 7999; //1KHz
+    TCCR1B = _BV(WGM12) | _BV(CS11); //CTC, PRESCALER AT 8
+    OCR1A = 499; //2KHz, EACH SEG UPDATED AT 60HZ
     TIMSK1 = _BV(OCIE1A);
 }
 

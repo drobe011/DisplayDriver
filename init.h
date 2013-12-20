@@ -5,6 +5,8 @@
 #define SINKPINS 3
 #define ANUNCPINS 2
 #define DIGITS 4
+#define SOURCE 0
+#define SINK 1
 
 //DIGIT BITMASKS
 #define A_SEG 0
@@ -51,6 +53,8 @@
 
 void setupPorts();
 void setupTimers();
+extern uint8_t currentDigit;
+extern uint8_t currentBit;
 
 typedef struct _pin
 {
@@ -105,5 +109,15 @@ _digit portMap[DIGITS] = //+ANUNCPINS] =
     //{{{PIN_4, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}, {PIN_3, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY}},},
 };
 
+__inline void currentSegmentOn()
+{
+    *sourcePin[portMap[currentDigit].Pin[SOURCE][currentBit]].mPORT |= _BV(sourcePin[portMap[currentDigit].Pin[SOURCE][currentBit]].mPin);
+    *sinkPin[portMap[currentDigit].Pin[SINK][currentBit]].mPORT |= _BV(sinkPin[portMap[currentDigit].Pin[SINK][currentBit]].mPin);
+}
 
+__inline void currentSegmentOff()
+{
+    *sourcePin[portMap[currentDigit].Pin[SOURCE][currentBit]].mPORT &= ~_BV(sourcePin[portMap[currentDigit].Pin[SOURCE][currentBit]].mPin);
+    *sinkPin[portMap[currentDigit].Pin[SINK][currentBit]].mPORT &= ~_BV(sinkPin[portMap[currentDigit].Pin[SINK][currentBit]].mPin);
+}
 #endif // INIT_H_INCLUDED
